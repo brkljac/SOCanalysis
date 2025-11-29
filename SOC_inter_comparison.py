@@ -919,7 +919,7 @@ if __name__ == "__main__":
     sheet_name_indicators = "SONATA soil indicators DATASET_"
 
 
-    fig_save = True
+    fig_save = False
     out_path = os.path.join(os.getcwd(), "Datasets comparison report")
 
 
@@ -1161,7 +1161,7 @@ if __name__ == "__main__":
     \nCorresponding lists of entry IDs are:
     1) IDs of {len(no_SOC_list)} entries without direct SOC match in SoilAtlas:\n''')
     print_in_columns(no_SOC_list_names, columns=3)
-    print(f'''\n\n2) IDs of {len(no_SOC_list_matched)} entries without direct SOC match in SoilAtlas that have been resolved (matched to some alternative SOC vlaue in SoilAtlas):\n''')
+    print(f'''\n\n2) IDs of {len(no_SOC_list_matched)} entries without direct SOC match in SoilAtlas that have been resolved (matched to some alternative SOC value in SoilAtlas):\n''')
     print_in_columns(no_SOC_list_matched, columns=3)
     print(f'''\n\n3) IDs of {len(no_SOC_list_discarded)} entries without direct SOC match in SoilAtlas that could not been resolved (discarded from further comparison):\n''')
     print_in_columns(no_SOC_list_discarded, columns=3)
@@ -1450,12 +1450,12 @@ if __name__ == "__main__":
     \n\t     RMSE confidence interval: [ {atlas_SOC_val_res['rmse_confidence_interval'][0]:.2f}, {atlas_SOC_val_res['rmse_confidence_interval'][1]:.2f} ]
     ''')
 
-    print(f'''\n\n*********\n\t3.a) SOC MAE (Mean Absolute Error): (1/n) * sum( |soc_atlas_i - soc_i| ) 
+    print(f'''\n\n*********\n\t3.b) SOC MAE (Mean Absolute Error): (1/n) * sum( |soc_atlas_i - soc_i| ) 
     \n\t     MAE = {atlas_SOC_val_res['mae']:.2f}
     \n\t     MAE confidence interval: [ {atlas_SOC_val_res['mae_confidence_interval'][0]:.2f}, {atlas_SOC_val_res['mae_confidence_interval'][1]:.2f} ]
     ''')
 
-    print(f'''\n\n*********\n\t3.a) SOC MBE (Mean Bias Error): (1/n) * sum( (soc_atlas_i - soc_i) ) 
+    print(f'''\n\n*********\n\t3.c) SOC MBE (Mean Bias Error): (1/n) * sum( (soc_atlas_i - soc_i) ) 
     \n\t     MBE = {atlas_SOC_val_res['mbe']:.2f}
     \n\t     MBE confidence interval: [ {atlas_SOC_val_res['mbe_confidence_interval'][0]:.2f}, {atlas_SOC_val_res['mbe_confidence_interval'][1]:.2f} ]
     ''')
@@ -1509,11 +1509,8 @@ if __name__ == "__main__":
     # ##################################################
 
     print(f'''\n\n*********\n*********\n5) Coefficient of determination (R^2) for simple linear regression of observed SOC based on SoilAtals data. 
-       Describes proportion of SOC values variance explained by soc_atlas.''')
-
-    print(f'''\n\n*********\n\t5.a) Percentage of observed SOC samples with absolute relative difference smaller than specified threshold: 
-    \n\t     Percentage of samples within tolerance = {atlas_SOC_val_res['percent_within_tolerance']:.2f} [%]
-    \n\t     rel_diff_tolerance =  {rel_diff_tolerance*100:.2f} [%]
+       Describes proportion of SOC values variance explained by soc_atlas.
+    \n\tR^2 = {atlas_SOC_val_res['r_squared']:.2f}
     ''')
 
 
@@ -1537,7 +1534,7 @@ if __name__ == "__main__":
 
     mbe_test_result = bool(atlas_SOC_val_res['t_test_results']['mbe_ttest']['pvalue_two_sided']<0.05)
     if mbe_test_result:
-        test_m = "\np_value < 0.05, null hypothesis can be rejected, MBE is probably significantly different from zero" 
+        test_m = "p_value < 0.05, null hypothesis can be rejected, MBE is probably significantly different from zero" 
     else:
         test_m = "p_value > 0.05, null hypothesis cannot not be rejected, MBE is probably not significantly different from zero"
     print(f'''\n\n*********\n\t7.a) MBE t-test, against the null hypothesis that mean error is not significantly different from zero: 
@@ -1550,7 +1547,7 @@ if __name__ == "__main__":
 
     mae_test_result = bool(atlas_SOC_val_res['t_test_results']['mae_ttest']['pvalue_one_sided']<0.05)
     if mae_test_result:
-        test_m = "\np_value < 0.05, null hypothesis can be rejected, MAE is probably smaller than threshold" 
+        test_m = "p_value < 0.05, null hypothesis can be rejected, MAE is probably smaller than threshold" 
     else:
         test_m = "p_value > 0.05, null hypothesis cannot be rejected, MAE is probably larger than threshold"
     print(f'''\n\n*********\n\t7.b) MAE t-test, against the null hypothesis that MAE >= mae_test_threshold: 
@@ -1567,7 +1564,7 @@ if __name__ == "__main__":
 
     mse_test_result = bool(atlas_SOC_val_res['t_test_results']['mse_ttest']['pvalue_one_sided']<0.05)
     if mse_test_result:
-        test_m = "\np_value < 0.05, null hypothesis can be rejected, MSE is probably smaller than threshold" 
+        test_m = "p_value < 0.05, null hypothesis can be rejected, MSE is probably smaller than threshold" 
     else:
         test_m = "p_value > 0.05, null hypothesis cannot be rejected, MSE is probably larger than threshold"
     print(f'''\n\n*********\n\t7.c) MSE t-test, against the null hypothesis that MSE >= mse_test_threshold: 
@@ -1583,7 +1580,7 @@ if __name__ == "__main__":
 
     sw_test_result = bool(atlas_SOC_val_res['shapiro_pvalue']<0.05)
     if sw_test_result:
-        test_m = "\np_value < 0.05, null hypothesis can be rejected, regression residuals probably do not follow normal distribution" 
+        test_m = "p_value < 0.05, null hypothesis can be rejected, regression residuals probably do not follow normal distribution" 
     else:
         test_m = "p_value > 0.05, null hypothesis cannot be rejected, regression residuals probably follow normal distribution"
     print(f'''\n\n*********\n\t7.d) Shapiro-Wilk test against the null hypothesis that SOC regression residuals do not come from a normally distributed population.
@@ -1596,7 +1593,7 @@ if __name__ == "__main__":
 
 
     # ##################################################
-    # 7) Tests of statistical significance,
+    # 8) Tests of statistical significance,
     #    test statistics and corresponding p_values
     # ##################################################
 
